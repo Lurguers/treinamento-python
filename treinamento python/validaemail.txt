@@ -1,0 +1,47 @@
+from configuracao.conexao import consultar, executar
+from configuracao.funcao import permissao, validar_email
+from re import search
+
+tipo_registro = search('([^\\\]+(?=\.py$))', __file__).group(1)
+
+def analisar():
+    quantidade = 0
+    try:
+        resultado = consultar(
+            """
+            select i_pessoas as pessoa, 
+          email
+          from bethadba.pessoas
+          where email is not null
+          and bethadba.dbf_valida_email(trim(email)) = 1
+            """
+        )
+        quantidade += len(resultado)
+        if quantidade > 0:
+            print('# Email invalido: ' + str(quantidade) + ' | ' + str(
+                tipo_registro))
+    except Exception as e:
+        print(f'* Erro ao executar função "analisar" {e}')
+    finally:
+        return quantidade
+
+
+def ajustar():
+    try:
+        resultado = consultar(
+            """
+            select i_pessoas, 
+          email
+          from bethadba.pessoas
+          where email is not null
+          and bethadba.dbf_valida_email(trim(email)) = 1
+            """
+        )
+        for linha in resultado:
+            identificador = linha['i_pessoas']
+            email = linha['email']
+            comando = "UPDATE bethadba.pessoas SET email = NULL WHERE i_pessoas = {};".format(identificador)
+            # print(permissao(comando))
+            executar(permissao(comando))
+    except Exception as e:
+        print(f'* Erro ao executar função "ajustar" {e}')

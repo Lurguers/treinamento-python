@@ -1,0 +1,49 @@
+numero = 1
+valor = 7.58
+texto = 'Lucas'
+lista = ['Lucas','Kenedy','Katiri','Murilo']
+boolean = False
+nulo = None
+# print(numero)
+# print(boolean.__class__)
+
+# if numero == 2:
+#     print('numero é dois')
+# elif numero == 1:
+#     print('numero é um')
+# else:
+#     print('não é dois nem um')
+
+while numero < 10:
+    # print(numero)
+    numero +=1
+
+# for i in lista:
+# for i in range(5,10)
+# for i in range(len(lista)):
+# for i,j in enumerate(lista):
+#     print(i)
+#     print(j)
+
+def somaNumeros(a, b):
+    return a + b
+
+# print(somaNumeros(1,2))
+
+palavra = 'era uma vez, na betha, sistemas'
+k,j,y = palavra.split(',')
+# print(k)
+# print(j)
+# print(y)
+
+texto = f'texto com valor {valor}'
+texto = 'texto com valor {}'.format(valor) 
+
+try:
+    h = palavra / 15
+    print(h)
+except Exception as e:
+    print(e)
+finally:
+    print('final')
+

@@ -1,0 +1,76 @@
+import requests
+
+url = "https://pessoal.cloud.betha.com.br/service-layer/v1/api/historico-pessoa/"
+
+payload={}
+headers = {
+  'Authorization': 'Bearer c6171025-a595-45c1-9dbe-55b28e39622d'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+---------------------------------------
+from time import sleep
+import requests
+import json
+
+offset = 0
+limit = 10
+hasNext = True
+pagina = 0
+listaAltera = []
+headers = {
+  'Authorization': 'Bearer c6171025-a595-45c1-9dbe-55b28e39622d',
+  'Content-Type': 'application/json'
+}
+while hasNext:
+  url = f"https://pessoal.cloud.betha.com.br/service-layer/v1/api/historico-pessoa?limit={limit}&offset={offset}"
+
+  payload={}
+
+  response = requests.request("GET", url, headers=headers, data=payload)
+  response = response.json()
+
+  pagina += 1
+  offset = limit * pagina
+  hasNext = response['hasNext']
+  for i in response['content']:
+    if i['tipoPessoa'] == 'FISICA' and i['nome'] == 'EMANUEL DE MELO ALEXANDRE':
+      listaAltera.append(i)
+
+lotes = []
+
+for j in listaAltera:
+  url = "https://pessoal.cloud.betha.com.br/service-layer/v1/api/historico-pessoa/"
+  j['estadoCivil'] = 'CASADO'
+  j.pop('version')
+  payload = json.dumps([{
+      'idIntegracao': 'teste treinamento',
+      'conteudo': j
+    }])
+
+  response = requests.request("POST", url, headers=headers, data=payload)
+  response = response.json()
+
+  if 'id' in response:
+    lotes.append(response['id'])
+  else:
+    print(response['message'])
+
+print(lotes)
+
+for k in lotes:
+  status = 'AGUARDANDO_EXECUCAO'
+  while status in ('AGUARDANDO_EXECUCAO', 'EXECUTANDO'):
+    url = f'https://pessoal.cloud.betha.com.br/service-layer/v1/api/lote/lotes/{k}'
+    payload = {}
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+    response = response.json()
+    status = response['situacao']
+    sleep(1)
+    # print(response)
+  print(response['retorno'][0]['situacao'])
+
